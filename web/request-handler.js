@@ -37,8 +37,19 @@ exports.handleRequest = function (req, res) {
 
       req.on('end', function(){
         var bodyFinal = qs.parse(body);
-
-
+        console.log('expecting true or false: ' + archive.isUrlInList(bodyFinal.url));
+        if(archive.isUrlInList(bodyFinal.url)){
+          if(archive.isURLArchived(bodyFinal.url)){
+            httpHelpers.serveAssets(res, exports.paths.archivedSites + '/' + url.split('.').join('') + '.html');
+          }else{
+            console.log('not yet archived, wait for bot');
+            httpHelpers.serveAssets(res, archive.paths.loading);
+          }
+        } else {
+          archive.addUrlToList(bodyFinal.url);
+          console.log('added url to list');
+          httpHelpers.serveAssets(res, archive.paths.loading);
+        }
       });
     }
   }

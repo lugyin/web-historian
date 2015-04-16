@@ -13,7 +13,8 @@ exports.paths = {
   'siteAssets' : path.join(__dirname, '../web/public'),
   'archivedSites' : path.join(__dirname, '../archives/sites'),
   'list' : path.join(__dirname, '../web/archives/sites.txt'),
-  'home' : path.join(__dirname, '../web/public/index.html')
+  'home' : path.join(__dirname, '../web/public/index.html'),
+  'loading' : path.join(__dirname, '../web/public/loading.html')
 };
 
 // Used for stubbing paths for jasmine tests, do not modify
@@ -28,30 +29,42 @@ exports.initialize = function(pathsObj){
 
 
 exports.isUrlInList = function(url){
-  fs.readFile(exports.paths.list, function(err, data){
-    if(err){
-      // return false;
-      console.log('we messed up');
+  // fs.readFile(exports.paths.list, function(err, data){
+  //     if(err){
+  //       console.log(err);
+  //       return false;
+  //     } else {
+  //       return data.toString().indexOf(url) > 0 ? true : false;
+  //     }
+  // });
+  var result = fs.readFileSync(exports.paths.list);
+  return result.toString().indexOf(url) > 0 ? true : false;
+};
+
+exports.addUrlToList = function(data){
+  fs.appendFile(exports.paths.list, data, function(error){
+    if (error){
+      throw err;
+    } else {
+      console.log('appended successfully!');
     }
-    console.log(data);
   });
-
-  //needs access to .txt
-  //check bodyFinal again .txt
-  //return true or false;
-
 };
 
-exports.addUrlToList = function(){
-
-};
-
-exports.isURLArchived = function(){
-
+exports.isURLArchived = function(url){
+  var newUrlFilePath = exports.paths.archivedSites + '/' + url.split('.').join('') + '.html';
+  return fs.existsSync(newUrlFilePath);
 };
 
 exports.readListOfUrls = function(){
+  fs.readFile(exports.paths.list, function(err, data){
+    if (err){
+      console.log(err);
+    } else {
+      //do something with data
 
+    }
+  });
 };
 
 exports.downloadUrls = function(){
